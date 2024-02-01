@@ -19,3 +19,6 @@ Digital Inputs
 Analog Inputs with 0-10V
 DIN-Rail mount
 Expansions Supported
+
+Datasheet:   https://drive.google.com/open?id=1Wpny2H4d9FBYC0nMW9GJITKNcoTktJ1b&usp=drive_fs
+User Guide:  https://drive.google.com/open?id=1eKeTSateFGDwy6-SbwYrJ4HVjHWCwbuF&usp=drive_fs

@@ -1,4 +1,3 @@
-
 /*
  * 
  * 
@@ -6,14 +5,13 @@
  * micro SD Card Check CS : 15
  * Ethernet Check      CS : 5
  * RS485
- * EC2G
+ * SIM800C
  * All Output Turn ON Series
  * All input status serial print
  * 
   Turns ON All Outputs in series
   Serial prints all the input status
   SIM800C External Antenna Test
-  
  *   
  * 
  */
@@ -37,17 +35,13 @@
 #define INPUT4 14
 #define INPUT5 13
 
-#define OUTPUT1 12
-#define OUTPUT2 2
-#define OUTPUT3 27
-#define OUTPUT4 4
 
-#define RS485_RX 26
-#define RS485_TX 25
-#define RS485_FC 22
+#define RXD 25
+#define TXD 26
+#define FC 22
 
-#define GSM_RX 32
-#define GSM_TX 33
+#define GSM_RX 33
+#define GSM_TX 32
 #define GSM_RESET 21
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -58,7 +52,6 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 Adafruit_ADS1115 ads1;
-
 
 
 RTC_DS3231 rtc; 
@@ -98,23 +91,25 @@ unsigned long int timer1 = 0;
 // ================================================ SETUP ================================================
 void setup() {
  
-  Serial.begin(9600);
+  Serial.begin(115200);
 
-  Serial.println("Hello");
-  Serial1.begin(9600, SERIAL_8N1, RS485_RX, RS485_TX); 
-  Serial2.begin(9600, SERIAL_8N1, GSM_RX, GSM_TX); 
-
-  //pinMode(GSM_RESET, OUTPUT);
-  //digitalWrite(GSM_RESET, HIGH);   // RS-485 
-
-  pinMode(RS485_FC, OUTPUT);
-  digitalWrite(RS485_FC, HIGH);   // RS-485 
+  Serial.println("Hello") ;
   
-  pinMode(OUTPUT1, OUTPUT);
-  pinMode(OUTPUT2, OUTPUT);
-  pinMode(OUTPUT3, OUTPUT);
-  pinMode(OUTPUT4, OUTPUT);
+  pinMode(FC, OUTPUT);
+  digitalWrite(FC, HIGH); 
 
+  pinMode(GSM_RESET, OUTPUT);
+  digitalWrite(GSM_RESET, HIGH);   // RS-485 
+  
+  
+  Serial2.begin(115200, SERIAL_8N1, GSM_RX, GSM_TX); 
+  Serial1.begin(9600, SERIAL_8N1, RXD, TXD);
+   
+//  pinMode(GSM_RESET, OUTPUT);
+//  digitalWrite(GSM_RESET, HIGH);   // RS-485 
+//  
+  
+ 
   pinMode(5, OUTPUT);
   pinMode(15, OUTPUT);
   digitalWrite(5,HIGH);
@@ -135,11 +130,11 @@ void setup() {
   }
   display.display();
 
-   if (!ads1.begin(0x48)) {
+if (!ads1.begin(0x48)) {
     Serial.println("Failed to initialize ADS 1 .");
-    while (1);
+    //while (1);
   }
-
+  
   RTC_Check();
   delay(1000);
   SD_CHECK();
@@ -173,6 +168,14 @@ void setup() {
     Serial.write(inByte);
     }
   }
+  timer1 = millis();
+  Serial2.println("ATD+94776836382;");
+  while(millis()<timer1+10000){
+    while (Serial2.available()) {
+    int inByte = Serial2.read();
+    Serial.write(inByte);
+    }
+  }
 
    Serial.println("Testing Modem Done");
 
@@ -183,7 +186,7 @@ void setup() {
   adcAttachPin(36);
 
 
-  digitalWrite(RS485_FC, HIGH);   // RS-485 
+  digitalWrite(FC, HIGH);   // RS-485 
 
 
   //
@@ -196,14 +199,8 @@ void setup() {
 
 
 void loop() {
-
-  int16_t adc0, adc1, adc2, adc3;
   
-  // read from port 0, send to port 1:
-  while (Serial.available()) {
-    int inByte = Serial.read();
-    Serial2.write(inByte);
-  }
+  int16_t adc0, adc1, adc2, adc3;
 
   while (Serial2.available()) {
     int inByte = Serial2.read();
@@ -229,16 +226,26 @@ void loop() {
   Serial.print("AIN2: "); Serial.print(adc1); Serial.println("  ");
   Serial.print("AIN3: "); Serial.print(adc2); Serial.println("  ");
   Serial.print("AIN4: "); Serial.print(adc3); Serial.println("  ");
-
-
-
+ 
   
   Serial1.println("Hello RS-485");
    
  //Serial2.println("AT");
- delay(1000);
+ delay(500);
  
- 
+  digitalWrite(FC, HIGH);                    // Make FLOW CONTROL pin HIGH
+  delay(500);
+  Serial1.println(F("RS485 01 SUCCESS"));    // Send RS485 SUCCESS serially
+  delay(500);                                // Wait for transmission of data
+  digitalWrite(FC, LOW) ;                    // Receiving mode ON
+
+                                             // Serial1.flush() ;
+  delay(500);     
+  
+  while (Serial1.available()) {  // Check if data is available
+    char c = Serial1.read();     // Read data from RS485
+    Serial.write(c);             // Print data on serial monitor
+  }
 }
 
 

@@ -58,7 +58,6 @@ byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packe
 EthernetUDP Udp;// A UDP instance to let us send and receive packets over UDP
 
 int analog_value = 0;
-  
 int readSwitch(){
   analog_value = analogRead(ANALOG_PIN_0);
   return analog_value; //Read analog

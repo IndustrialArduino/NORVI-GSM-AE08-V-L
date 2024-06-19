@@ -1,9 +1,9 @@
 /*
  * RTC Check
- * micro SD Card Check CS : 15
- * Ethernet Check      CS : 5
+ * micro SD Card Check 
+ * Ethernet Check      
  * RS485
- * SIM800C
+ * EC25
  * All Output Turn ON Series
  * All input status serial print
  * Turns ON All Outputs in series
@@ -73,7 +73,7 @@ void setup() {
   digitalWrite(FC, HIGH); 
 
   pinMode(GSM_RESET, OUTPUT);
-  digitalWrite(GSM_RESET, HIGH);   // RS-485  
+  digitalWrite(GSM_RESET, HIGH);    
   
   Serial2.begin(115200, SERIAL_8N1, GSM_RX, GSM_TX); 
   Serial1.begin(9600, SERIAL_8N1, RXD, TXD);

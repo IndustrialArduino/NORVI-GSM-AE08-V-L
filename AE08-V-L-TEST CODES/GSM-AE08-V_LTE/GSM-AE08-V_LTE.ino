@@ -24,11 +24,11 @@
 
 #define ANALOG_PIN_0 36
 
-#define INPUT1 39
-#define INPUT2 34
-#define INPUT3 35
-#define INPUT4 14
-#define INPUT5 13
+#define INPUT1 34
+#define INPUT2 35
+#define INPUT3 14
+#define INPUT4 13
+#define INPUT5 4
 
 #define RXD 25
 #define TXD 26
